@@ -1,0 +1,892 @@
+/* Tokens. Red is reserved for "missing", teal marks what the method produced. */
+:root {
+  --paper: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #16202a;
+  --ink-soft: #4a5663;
+  --line: #d9d5cc;
+  --accent: #0b5c6b;
+  --accent-bg: #e3f0f2;
+  --missing: #b3261e;
+  --missing-bg: #fbe4e1;
+  --imputed-bg: #d5edf0;
+  --series-before: #c2570c;
+  --series-after: #1298a8;
+  --focus: #1d4ed8;
+  --mono: 'Cascadia Mono', Consolas, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+  --fs: 15px;
+  --fs-small: 13px;
+  --fs-title: 15px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #12171c;
+    --surface: #1a2128;
+    --ink: #e8ecef;
+    --ink-soft: #a7b1bb;
+    --line: #34404b;
+    --accent: #6cc5d3;
+    --accent-bg: #17343a;
+    --missing: #ff8a80;
+    --missing-bg: #4a1f1c;
+    --imputed-bg: #1c4249;
+    --series-before: #e8853a;
+    --series-after: #35b4c4;
+    --focus: #93b4ff;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--fs) / 1.45 var(--sans);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 24px;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: var(--fs-title);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+code,
+pre {
+  font-family: var(--mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Layout */
+.lab {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.lab__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.lab__header p {
+  color: var(--ink-soft);
+}
+
+.lab__body {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .lab__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Controls */
+.controls {
+  display: grid;
+  gap: 12px;
+}
+
+fieldset {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  margin: 0;
+  padding: 10px 12px 12px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+legend {
+  font-weight: 700;
+  font-size: var(--fs-small);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  padding: 0 6px;
+}
+
+.field {
+  display: grid;
+  gap: 3px;
+  font-size: var(--fs-small);
+}
+
+.field > span {
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+}
+
+.field output {
+  color: var(--ink);
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+.field--check,
+.field--inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field--inline input[type='number'] {
+  width: 84px;
+}
+
+select,
+input[type='number'] {
+  font: inherit;
+  font-size: var(--fs);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 5px 8px;
+  border-radius: 3px;
+  min-width: 0;
+  width: 100%;
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+.hint {
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.hint__source {
+  display: block;
+  font-style: italic;
+}
+
+.btn {
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  justify-self: start;
+}
+
+.btn:hover {
+  background: var(--accent-bg);
+}
+
+.btn--small {
+  padding: 3px 9px;
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.segmented--wrap {
+  flex-wrap: wrap;
+}
+
+.segmented button,
+.chips button {
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--ink);
+  background: var(--surface);
+  border: 0;
+  padding: 6px 8px;
+  cursor: pointer;
+  flex: 1 1 auto;
+}
+
+.segmented button + button {
+  border-left: 1px solid var(--line);
+}
+
+.segmented button.is-active {
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chips button {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.chips button.is-active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 700;
+}
+
+.outlook {
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.outlook summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.outlook dt {
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 6px;
+}
+
+.outlook dd {
+  margin: 0;
+}
+
+/* Results */
+.results {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.banner {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  background: var(--accent-bg);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.banner__sub {
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+}
+
+.banner--error {
+  border-left-color: var(--missing);
+  background: var(--missing-bg);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+.skeleton {
+  height: 420px;
+  border: 1px dashed var(--line);
+  background: var(--surface);
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.frames[aria-busy='true'] {
+  opacity: 0.6;
+}
+
+@media (max-width: 1100px) {
+  .frames {
+    grid-template-columns: 1fr;
+  }
+}
+
+.df-view {
+  min-width: 0;
+}
+
+.df-view__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.df-view__shape,
+.df-view__more {
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.is-missing-count {
+  color: var(--missing);
+  font-weight: 700;
+}
+
+.df-view__scroll {
+  height: 300px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.df-view__empty {
+  padding: 16px;
+  color: var(--ink-soft);
+}
+
+.df {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: var(--fs-small);
+  width: 100%;
+}
+
+.df th,
+.df td {
+  padding: 3px 10px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+
+.df thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 700;
+}
+
+.df tbody th {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.df td.is-text {
+  text-align: left;
+}
+
+.df td.is-nan {
+  color: var(--missing);
+  background: var(--missing-bg);
+  font-weight: 700;
+}
+
+.df td.is-imputed {
+  background: var(--imputed-bg);
+  font-weight: 700;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.df tr.is-dropped td,
+.df tr.is-dropped th {
+  text-decoration: line-through;
+  color: var(--ink-soft);
+}
+
+.gaps-first {
+  margin-top: -8px;
+  color: var(--ink-soft);
+}
+
+.lab--embed .gaps-first {
+  display: none;
+}
+
+.notes {
+  margin: 0;
+  padding: 8px 12px 8px 28px;
+  border-left: 4px solid var(--line);
+  background: var(--surface);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.analysis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .analysis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chart */
+.chart {
+  margin: 0;
+  min-width: 0;
+}
+
+.chart__head,
+.stats__head,
+.code header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.chart__plot {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 6px 6px 0;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chart__grid line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart__grid text {
+  fill: var(--ink-soft);
+  font-size: 11px;
+  font-family: var(--sans);
+}
+
+.bar--before {
+  fill: var(--series-before);
+}
+
+.bar--after {
+  fill: var(--series-after);
+}
+
+.truth {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.hit.is-hover {
+  fill: var(--ink);
+  fill-opacity: 0.07;
+}
+
+.chart__tip,
+.chart__empty {
+  font-size: var(--fs-small);
+  color: var(--ink);
+  min-height: 24px;
+  padding: 2px 4px 4px;
+}
+
+.chart__tip--idle {
+  color: var(--ink-soft);
+}
+
+.legend {
+  list-style: none;
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+  flex-wrap: wrap;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  vertical-align: -1px;
+  border-radius: 2px;
+}
+
+.swatch--before {
+  background: var(--series-before);
+}
+
+.swatch--after {
+  background: var(--series-after);
+}
+
+.swatch--truth {
+  height: 0;
+  border-top: 2px solid var(--ink);
+  vertical-align: 4px;
+  border-radius: 0;
+}
+
+/* Stats */
+.kpi,
+.corr table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: var(--fs-small);
+  margin-bottom: 6px;
+}
+
+.kpi th,
+.kpi td,
+.corr th,
+.corr td {
+  padding: 5px 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+}
+
+.kpi tbody th,
+.kpi thead th:first-child,
+.corr tbody th {
+  text-align: left;
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.kpi thead th,
+.corr thead th {
+  border-bottom: 2px solid var(--ink);
+  font-family: var(--sans);
+}
+
+.kpi td:last-child {
+  font-weight: 700;
+  background: var(--imputed-bg);
+}
+
+.kpi small,
+.corr small {
+  color: var(--ink-soft);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.kpi__muted {
+  color: var(--ink-soft);
+  font-family: var(--sans) !important;
+  text-align: left !important;
+}
+
+.corr {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+/* Code */
+.code pre {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* Upload dialog */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 10;
+}
+
+.dialog {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px;
+  max-width: 460px;
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+
+.dialog h2 {
+  font-size: 18px;
+}
+
+.dialog__rules {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.dialog__file {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.dialog__error {
+  color: var(--missing);
+  background: var(--missing-bg);
+  padding: 6px 10px;
+  font-size: var(--fs-small);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: end;
+}
+
+/* Embed mode: fits one slide (about 920 × 440 px), no page scroll */
+.lab--embed {
+  padding: 8px;
+  max-width: none;
+  --fs: 12.5px;
+  --fs-small: 11.5px;
+  --fs-title: 12.5px;
+}
+
+.lab--embed .lab__body {
+  grid-template-columns: 215px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.lab--embed .controls {
+  gap: 6px;
+}
+
+.lab--embed fieldset {
+  padding: 4px 8px 7px;
+  gap: 4px;
+}
+
+.lab--embed fieldset .hint,
+.lab--embed fieldset .btn--small,
+.lab--embed .df-view__more,
+.lab--embed .notes,
+.lab--embed .stats .hint,
+.lab--embed .chart__tip,
+.lab--embed .field--inline {
+  display: none;
+}
+
+.lab--embed select,
+.lab--embed input[type='number'] {
+  padding: 2px 6px;
+}
+
+.lab--embed .segmented button {
+  padding: 3px 5px;
+}
+
+.lab--embed .chips button {
+  padding: 1px 7px;
+}
+
+.lab--embed .results {
+  gap: 8px;
+}
+
+.lab--embed .frames,
+.lab--embed .analysis {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lab--embed .df-view__scroll {
+  height: 150px;
+}
+
+.lab--embed .df th,
+.lab--embed .df td {
+  padding: 1px 8px;
+}
+
+.lab--embed .code pre {
+  padding: 5px 10px;
+  max-height: 62px;
+}
+
+.lab--embed .kpi th,
+.lab--embed .kpi td {
+  padding: 3px 8px;
+}
+
+/* Embed: fill exactly the iframe, the two tables take whatever height is left */
+.lab--embed {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.lab--embed .lab__body {
+  height: 100%;
+  align-items: stretch;
+}
+
+.lab--embed .controls {
+  overflow-y: auto;
+  align-content: start;
+}
+
+.lab--embed legend {
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.lab--embed .results {
+  grid-template-rows: minmax(80px, 1fr) auto auto;
+  min-height: 0;
+}
+
+.lab--embed .banner {
+  grid-row: 1;
+  align-self: start;
+}
+
+.lab--embed .frames {
+  min-height: 0;
+}
+
+.lab--embed .df-view {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lab--embed .df-view__scroll {
+  height: auto;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.lab--embed .chart svg {
+  max-height: 118px;
+}
+
+.lab--embed .chart__head,
+.lab--embed .stats__head {
+  margin-bottom: 2px;
+}
+
+.lab--embed .code header {
+  display: none;
+}
+
+.lab--embed .kpi {
+  margin-bottom: 0;
+}
+
+.kpi th,
+.kpi td {
+  white-space: nowrap;
+}
+
+.kpi .kpi__muted {
+  white-space: normal;
+}
+
+.lab--embed .kpi .kpi__muted {
+  font-size: 0;
+}
+
+.lab--embed .chart svg {
+  max-height: 104px;
+}
+
+.lab--embed .code pre {
+  max-height: 80px;
+  line-height: 1.35;
+}

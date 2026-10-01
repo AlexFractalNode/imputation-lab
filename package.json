@@ -1,0 +1,26 @@
+{
+  "name": "imputation-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive missing-value imputation with real pandas and scikit-learn in the browser (Pyodide)",
+  "scripts": {
+    "fetch:pyodide": "node scripts/fetch-pyodide.mjs",
+    "dev": "vite --port 5174",
+    "build": "node scripts/fetch-pyodide.mjs && vue-tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:py": "uv run --native-tls --python 3.13 --with pandas==2.3.3 --with scikit-learn==1.7.0 --with numpy==2.2.5 --with pytest pytest -q tests -p no:warnings"
+  },
+  "dependencies": {
+    "pyodide": "0.29.5",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.9",
+    "typescript": "^5.9.0",
+    "vite": "8.3.2",
+    "vitest": "5.0.3",
+    "vue-tsc": "^3.0.0"
+  }
+}
