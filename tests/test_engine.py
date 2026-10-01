@@ -230,6 +230,16 @@ def test_run_native_missing_listwise_and_errors():
     assert call(dataset={"kind": "generated", "name": "x"})["code"] == "unknown_dataset"
     assert call(dataset={"kind": "csv", "csv": ""})["code"] == "empty_file"
     assert json.loads(engine.run("not json"))["code"] == "internal_error"
+    survey = {"kind": "generated", "name": "notebook_survey"}
+    assert call(dataset=survey, seed="abc")["code"] == "bad_param"
+    assert call(dataset=survey, seed="")["ok"]
+
+
+def test_em_reports_missing_convergence():
+    df = correlated(80)
+    df.loc[:30, "y"] = np.nan
+    assert any("nicht konvergiert" in n for n in engine.impute(df, "em", {"max_iter": 1})["notes"])
+    assert not engine.impute(df, "em", {"max_iter": 200})["notes"]
 
 
 @pytest.mark.parametrize("method", ["none", "listwise", "drop_columns", "pairwise"] + IMPUTING)

@@ -18,6 +18,15 @@ function send(request: EngineRequest, resolve: (r: EngineResponse | null) => voi
   worker.postMessage({ id: running.id, request })
 }
 
+/** Settles everything that is waiting, so no caller hangs after the worker died. */
+function failPending(message: string) {
+  const failure: EngineResponse = { ok: false, code: 'engine_unavailable', message }
+  running?.resolve(failure)
+  queued?.resolve(null)
+  running = null
+  queued = null
+}
+
 function start() {
   worker = new Worker(new URL('./worker/pyodide.worker.ts', import.meta.url), { type: 'module' })
   worker.onmessage = (event) => {
@@ -31,6 +40,7 @@ function start() {
     else if (msg.type === 'fatal') {
       bootState.value = 'error'
       bootError.value = msg.message
+      failPending(`Python konnte nicht gestartet werden: ${msg.message}`)
     }
     else if (msg.type === 'result' && running && msg.id === running.id) {
       let response: EngineResponse
@@ -52,12 +62,17 @@ function start() {
   worker.onerror = (event) => {
     bootState.value = 'error'
     bootError.value = event.message || 'Der Worker konnte nicht gestartet werden.'
+    failPending(bootError.value)
   }
 }
 
 /** Resolves with the response, or with null if a newer request replaced this one. */
 export function runEngine(request: EngineRequest): Promise<EngineResponse | null> {
   return new Promise((resolve) => {
+    if (bootState.value === 'error') {
+      resolve({ ok: false, code: 'engine_unavailable', message: bootError.value })
+      return
+    }
     if (!running) {
       send(request, resolve)
       return

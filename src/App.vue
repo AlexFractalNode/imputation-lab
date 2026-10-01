@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { categories, datasets, methodById, outlook } from './catalog'
 import DataFrameView from './components/DataFrameView.vue'
 import HistogramChart from './components/HistogramChart.vue'
@@ -58,7 +58,11 @@ async function datasetSpec(): Promise<DatasetSpec> {
   return { kind: 'csv', csv: csvCache.get(file)! }
 }
 
+let latestRun = 0
+let syncing = false // true while a response writes resolved defaults back into the state
+
 async function run() {
+  const runId = ++latestRun
   busy.value = true
   try {
     const request: EngineRequest = {
@@ -66,19 +70,23 @@ async function run() {
       missing: { mechanism: state.mechanism, rate: state.rate / 100, target: state.target, driver: state.driver },
       method: { id: state.method, params: { ...state.params } },
       column: state.column,
-      seed: state.seed,
+      seed: Number.isInteger(state.seed) ? state.seed : 0,
     }
     const response = await runEngine(request)
-    if (response === null) // replaced by a newer request
+    if (response === null || runId !== latestRun) // replaced by a newer request
       return
     if (response.ok) {
       result.value = response
       error.value = ''
+      syncing = true
       if (response.missing_applied) {
         state.target = response.missing_applied.target
         state.driver = response.missing_applied.driver
       }
       state.column = response.column
+      history.replaceState(null, '', serializeState(state))
+      await nextTick() // let the watcher see (and skip) these writes
+      syncing = false
     }
     else {
       error.value = response.message
@@ -88,7 +96,8 @@ async function run() {
     error.value = e instanceof Error ? e.message : String(e)
   }
   finally {
-    busy.value = false
+    if (runId === latestRun)
+      busy.value = false
   }
 }
 
@@ -101,6 +110,8 @@ function schedule() {
 watch(
   () => [state.dataset, state.mechanism, state.rate, state.target, state.driver, state.method, JSON.stringify(state.params), state.column, state.seed, upload.value],
   () => {
+    if (syncing)
+      return
     history.replaceState(null, '', serializeState(state))
     schedule()
   },

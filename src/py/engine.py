@@ -230,7 +230,8 @@ def _note_categoricals(df: pd.DataFrame, notes: list[str]) -> None:
 def em_impute(X: np.ndarray, max_iter: int = 100, tol: float = 1e-6):
     """EM for a multivariate normal model; missing cells get their conditional mean.
 
-    Returns (imputed array, mean vector, covariance matrix, iterations used).
+    Returns (imputed array, mean vector, covariance matrix, iterations used);
+    iterations is ``max_iter + 1`` if the algorithm did not converge.
     """
     X = np.asarray(X, dtype=float)
     n, p = X.shape
@@ -243,6 +244,7 @@ def em_impute(X: np.ndarray, max_iter: int = 100, tol: float = 1e-6):
         patterns.setdefault(miss[i].tobytes(), []).append(i)
 
     iterations = 0
+    converged = False
     for iterations in range(1, max_iter + 1):
         filled = X.copy()
         c_sum = np.zeros((p, p))
@@ -266,8 +268,9 @@ def em_impute(X: np.ndarray, max_iter: int = 100, tol: float = 1e-6):
         scale = max(1.0, float(np.abs(sigma).max()))
         mu, sigma = mu_new, sigma_new
         if change / scale < tol:
+            converged = True
             break
-    return filled, mu, sigma, iterations
+    return filled, mu, sigma, iterations if converged else max_iter + 1
 
 
 def _regression_impute(df: pd.DataFrame, cols: list[str], stochastic: bool, seed: int) -> pd.DataFrame:
@@ -479,7 +482,7 @@ def impute(df: pd.DataFrame, method: str, params: dict, seed: int = 0):
         filled, _mu, _sigma, used = em_impute(df[cols].to_numpy(dtype=float), max_iter=max_iter)
         out[cols] = filled
         extras["em_iterations"] = used
-        if used >= max_iter:
+        if used > max_iter:
             notes.append(f"EM hat nach {max_iter} Iterationen noch nicht konvergiert.")
         code = (
             "# EM für ein multivariat normalverteiltes Modell (eigene numpy-Implementierung,\n"
@@ -620,7 +623,10 @@ def run(request_json: str) -> str:
 def _run(request: dict) -> dict:
     truth = load_dataset(request.get("dataset") or {})
     notes: list[str] = []
-    seed = int(request.get("seed", 0))
+    try:
+        seed = int(request.get("seed") or 0)
+    except (TypeError, ValueError):
+        raise EngineError("bad_param", "Der Seed muss eine ganze Zahl sein.") from None
     has_native_missing = bool(truth.isna().any().any())
 
     mask = None
