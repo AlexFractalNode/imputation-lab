@@ -890,3 +890,102 @@ input[type='checkbox'] {
   max-height: 80px;
   line-height: 1.35;
 }
+
+/* Help */
+.lab__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dialog--wide {
+  max-width: 820px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-top: 0;
+}
+
+.dialog__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  padding: 14px 0 8px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.help {
+  display: grid;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.help h3 {
+  font-size: 16px;
+  margin: 12px 0 0;
+}
+
+.help h3 + * {
+  margin-top: 0;
+}
+
+.help h4 {
+  font-size: var(--fs-small);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin: 8px 0 0;
+}
+
+.help ol,
+.help ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.help li {
+  margin-bottom: 4px;
+}
+
+.help dl {
+  margin: 0;
+}
+
+.help dt {
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.help dd {
+  margin: 0 0 0 14px;
+  color: var(--ink-soft);
+}
+
+.help dd b {
+  color: var(--ink);
+}
+
+.help a {
+  color: var(--accent);
+}
+
+.help__nan {
+  color: var(--missing);
+  background: var(--missing-bg);
+  font-family: var(--mono);
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.help__imputed {
+  background: var(--imputed-bg);
+  color: var(--ink);
+  font-weight: 700;
+  padding: 0 4px;
+  text-decoration: underline dotted;
+}
+
+.dialog--wide {
+  overflow-x: hidden;
+}

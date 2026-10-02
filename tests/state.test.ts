@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { categories, methodById, precheckUpload } from '../src/catalog'
+import { methodHelp } from '../src/methodHelp'
 import { defaultParams, parseState, serializeState } from '../src/urlState'
 
 describe('url state', () => {
@@ -47,5 +48,14 @@ describe('catalog', () => {
     expect(precheckUpload({ name: 'data.xlsx', size: 100 })).toMatch(/Dateityp/)
     expect(precheckUpload({ name: 'data.csv', size: 0 })).toMatch(/leer/)
     expect(precheckUpload({ name: 'data.csv', size: 6 * 1024 * 1024 })).toMatch(/zu groß/)
+  })
+})
+
+describe('help', () => {
+  it('explains every method', () => {
+    const ids = categories.flatMap(c => c.methods.map(m => m.id))
+    expect(Object.keys(methodHelp).sort()).toEqual([...ids].sort())
+    for (const id of ids)
+      expect(methodHelp[id].how.length).toBeGreaterThan(20)
   })
 })

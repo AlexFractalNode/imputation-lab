@@ -33,6 +33,14 @@ nur als Ausblick genannt.
 Modellbasierte Verfahren arbeiten auf den numerischen Spalten; Textspalten lassen
 sich mit „Mode“ füllen.
 
+## Dokumentation
+
+- [Benutzerhandbuch](docs/BENUTZERHANDBUCH.md) – Oberfläche, Kennzahlen, drei Experimente zum Einstieg
+- [Verfahren im Detail](docs/VERFAHREN.md) – was jedes Verfahren tut und wie es umgesetzt ist
+- [Architektur](docs/ARCHITEKTUR.md) – Aufbau, Entscheidungen, Tests
+
+Im Tool selbst erklärt der Knopf **Hilfe** alle Funktionen.
+
 ## Eigene Daten
 
 - CSV oder TSV, UTF-8, erste Zeile = Spaltennamen
@@ -79,3 +87,7 @@ Versionen im Browser: Pyodide 0.29.5 (Python 3.13), pandas 2.3.3, scikit-learn 1
 - R. J. A. Little, D. B. Rubin, *Statistical Analysis with Missing Data*, Wiley.
 - S. van Buuren, *Flexible Imputation of Missing Data*, CRC Press – [online](https://stefvanbuuren.name/fimd/).
 - scikit-learn User Guide, [Imputation of missing values](https://scikit-learn.org/stable/modules/impute.html).
+
+## Lizenz
+
+[MIT](LICENSE). Die Beispiel-Datensätze stehen unter ihren jeweiligen Bedingungen (siehe oben).

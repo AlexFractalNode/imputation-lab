@@ -2,6 +2,7 @@
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { categories, datasets, methodById, outlook } from './catalog'
 import DataFrameView from './components/DataFrameView.vue'
+import HelpDialog from './components/HelpDialog.vue'
 import HistogramChart from './components/HistogramChart.vue'
 import UploadDialog from './components/UploadDialog.vue'
 import { bootError, bootStage, bootState, restartEngine, runEngine } from './engineClient'
@@ -15,6 +16,7 @@ const result = ref<EngineResult | null>(null)
 const error = ref('')
 const busy = ref(false)
 const showUpload = ref(false)
+const showHelp = ref(false)
 const upload = ref<{ name: string, csv: string } | null>(null)
 const copied = ref(false)
 
@@ -222,7 +224,10 @@ const labState = computed(() => {
         <h1>Imputation Lab</h1>
         <p>Fehlende Werte behandeln und vergleichen – mit echtem pandas und scikit-learn im Browser.</p>
       </div>
-      <a class="btn" :href="REPO_URL" target="_blank" rel="noopener">Quellcode auf GitHub</a>
+      <div class="lab__actions">
+        <button type="button" class="btn" data-testid="open-help" @click="showHelp = true">Hilfe</button>
+        <a class="btn" :href="REPO_URL" target="_blank" rel="noopener">Quellcode auf GitHub</a>
+      </div>
     </header>
 
     <div class="lab__body">
@@ -478,6 +483,7 @@ const labState = computed(() => {
       </main>
     </div>
 
+    <HelpDialog v-if="showHelp" :repo-url="REPO_URL" @close="showHelp = false" />
     <UploadDialog v-if="showUpload" @loaded="onUploaded" @close="showUpload = false" />
   </div>
 </template>
